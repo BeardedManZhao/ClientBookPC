@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>top.lingyuzhao.chat.client</groupId>
+    <artifactId>ClientBookPC</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>me.friwi</groupId>
+            <artifactId>jcefmaven</artifactId>
+            <version>135.0.20</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- 1. 配置主 Jar 包，并在 Manifest 中指定主类和依赖路径 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <!-- 指定主类 -->
+                            <mainClass>top.lingyuzhao.chat.client.pc.MainApp</mainClass>
+                            <!-- 添加 Class-Path 属性到 Manifest -->
+                            <addClasspath>true</addClasspath>
+                            <!-- 指定依赖包的前缀目录 (相对于生成的 jar 包位置) -->
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- 2. 将所有依赖复制到 target/lib 目录 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <!-- 输出目录：target/lib -->
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+
+                            <!--
+                               注意：这里移除了 includeTransitive，因为默认就是包含传递依赖的。
+                               如果你想控制只复制某些作用域，可以使用 includeScope 或 excludeScope
+                            -->
+
+                            <!-- 可选：只复制 compile 和 runtime 范围的依赖 (默认行为，通常不需要写) -->
+                            <!-- <includeScope>runtime</includeScope> -->
+
+                            <!-- 可选：如果你希望把 test 依赖也复制出来 (通常不需要)，可以取消下面注释 -->
+                            <!-- <includeScope>test</includeScope> -->
+
+                            <!-- 可选：去除版本号文件名 (例如 guava.jar 而不是 guava-32.0.jar)，通常建议保留版本以防冲突 -->
+                            <!-- <stripVersion>true</stripVersion> -->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

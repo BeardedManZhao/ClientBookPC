@@ -1,0 +1,1 @@
+./jre-linux/bin/java -jar ./ClientBookPC-1.0-SNAPSHOT.jar
