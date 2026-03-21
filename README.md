@@ -8,7 +8,7 @@
 
 ### 下载软件包
 
-请您 [点击这里下载]() Windows和Linux的通用版本！
+请您 [点击这里下载](https://github.com/BeardedManZhao/ClientBookPC/releases/download/1.0/ClientBook-PC.zip) Windows和Linux的通用版本！
 
 ### 解压并运行
 
@@ -16,11 +16,11 @@
 
 解压后会出现文件目录，进入找到 `start.bat` 或者 `start.sh` 文件并双击就可以了！
 
-## 编译方法
+## 编译方法 （可选，不需要可以不阅读）
 
 项目中存在目录 `ClientBook-PC` 对应的就是系统的初始目录。
 
-在项目中我们直接利用 maven 打包之后会出现 `lib` 和 `` 如下所示
+在项目中我们直接利用 maven 打包之后会出现 `lib` 和 `ClientBookPC-xxx.jar` 如下所示
 
 ```
 PS D:\MyGithub\ClientBookPC\target> dir
