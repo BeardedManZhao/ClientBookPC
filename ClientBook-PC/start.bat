@@ -1,1 +1,1 @@
-.\jre-win\bin\java -jar ClientBookPC-1.0-SNAPSHOT.jar
+start .\jre-win\bin\javaw -jar ClientBookPC-1.1.jar
