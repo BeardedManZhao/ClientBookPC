@@ -31,16 +31,19 @@ DEALINGS IN THE SOFTWARE.
 The below copyright applies to the following files:
 
 spa/include/spa/monitor/type-info.h
+
 ```
 Copyright © 2021 Collabora Ltd.
 ```
 
 spa/include/spa/utils/string.h
+
 ```
 Copyright © 2021 Red Hat, Inc.
 ```
 
 spa/utils/cleanup.h:
+
 ```
 Copyright © 2023 PipeWire authors
 ```

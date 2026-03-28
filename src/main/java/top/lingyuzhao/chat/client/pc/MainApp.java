@@ -2,7 +2,9 @@ package top.lingyuzhao.chat.client.pc;
 
 import me.friwi.jcefmaven.CefAppBuilder;
 import me.friwi.jcefmaven.CefInitializationException;
+import me.friwi.jcefmaven.EnumProgress;
 import me.friwi.jcefmaven.UnsupportedPlatformException;
+import me.friwi.jcefmaven.impl.progress.ConsoleProgressHandler;
 import org.cef.CefApp;
 import org.cef.CefClient;
 import org.cef.CefSettings;
@@ -14,17 +16,25 @@ import org.cef.handler.CefRequestHandlerAdapter;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import static me.friwi.jcefmaven.EnumProgress.DOWNLOADING;
+import static me.friwi.jcefmaven.EnumProgress.INITIALIZED;
+
 public class MainApp {
 
+    public static final GlobalMessageBox ENV_GLOBAL_MESSAGE_BOX, GLOBAL_MESSAGE_BOX;
     static final String path;
-
+    static final ModernFrame ENV = new ModernFrame("环境检测"), ALL = new ModernFrame("提示");
     static {
+        ENV_GLOBAL_MESSAGE_BOX = new GlobalMessageBox(ENV);
+        GLOBAL_MESSAGE_BOX = new GlobalMessageBox(ALL);
         try {
             path = new File(
                     MainApp.class.getProtectionDomain()
@@ -33,6 +43,7 @@ public class MainApp {
                             .toURI()
             ).getParent();
         } catch (URISyntaxException e) {
+            ENV_GLOBAL_MESSAGE_BOX.showMessage("非法的目录错误！\n" + e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -83,9 +94,9 @@ public class MainApp {
             trayIcon.setImageAutoSize(true); // 自动适应托盘大小
 
             // 添加双击托盘图标的监听器 (可选)
-            trayIcon.addMouseListener(new java.awt.event.MouseAdapter() {
+            trayIcon.addMouseListener(new MouseAdapter() {
                 @Override
-                public void mouseClicked(java.awt.event.MouseEvent e) {
+                public void mouseClicked(MouseEvent e) {
                     // 双击托盘图标时，可以恢复窗口显示
                     if (e.getClickCount() == 2) {
                         frame.setVisible(true);
@@ -113,6 +124,40 @@ public class MainApp {
         UIManager.put("ProgressBar.background", new Color(18, 20, 35, 255));
         SwingUtilities.invokeLater(() -> {
             CefAppBuilder builder = new CefAppBuilder();
+            ENV.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    ENV_GLOBAL_MESSAGE_BOX.close();
+                    System.exit(0);
+                }
+            });
+            ENV_GLOBAL_MESSAGE_BOX.showMessageNoLambda("环境检测中...");
+            // 2. 设置进度监听器
+            builder.setProgressHandler(new ConsoleProgressHandler() {
+                @Override
+                public void handleProgress(EnumProgress state, float percent) {
+                    EnvInitChecker.progress = percent;
+                    if (state == INITIALIZED) {
+                        ENV_GLOBAL_MESSAGE_BOX.closeMessageNoLambda();
+                        ENV_GLOBAL_MESSAGE_BOX.showMessageNoLambda("环境准备就绪！即将启动");
+                        ENV_GLOBAL_MESSAGE_BOX.closeMessageNoLambda();
+                        return;
+                    }
+                    String name = switch (state) {
+                        case LOCATING -> "检测中...";
+                        case DOWNLOADING -> "下载中...";
+                        case EXTRACTING -> "提取中...";
+                        case INSTALL -> "安装中...";
+                        case INITIALIZING -> "初始化...";
+                        default -> "请稍等...";
+                    };
+                    if (percent <= 0 && state == DOWNLOADING) {
+                        name = "准备中...";
+                    }
+                    ENV_GLOBAL_MESSAGE_BOX.closeMessageNoLambda();
+                    ENV_GLOBAL_MESSAGE_BOX.showMessageNoLambda(Math.max(0, percent) + "%【" + name + "】我们正在为您准备环境 请稍等！");
+                }
+            });
             final CefSettings cefSettings = builder.getCefSettings();
             System.out.println("请稍等，我们正在为您初始化环境！");
             // 自动下载 + 配置环境
@@ -123,6 +168,8 @@ public class MainApp {
             try {
                 cefApp = builder.build();
             } catch (IOException | InterruptedException | CefInitializationException | UnsupportedPlatformException e) {
+                ENV_GLOBAL_MESSAGE_BOX.closeMessage();
+                ENV_GLOBAL_MESSAGE_BOX.showMessage("初始化环境出现问题！\n" + e.getMessage());
                 throw new RuntimeException(e);
             }
 
@@ -160,7 +207,7 @@ public class MainApp {
 
             JFrame frame = new ModernFrame("CodeBook Chat");
             // 使用绝对路径（以/开头）从 classpath 根目录查找
-            setAppIcons(frame, "/logo.jpg");
+            setAppIcons(frame, "/logoTM.png");
             frame.setSize(1200, 800);
             // 1. 设置为 DO_NOTHING_ON_CLOSE，防止窗口直接关闭但程序还在运行
             frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -186,8 +233,9 @@ public class MainApp {
                     System.out.println("正在关闭 UI...");
                     // 4. 关闭 UI
                     frame.dispose(); // dispose 会自动移除组件，removeAll 不是必须的
+                    ENV_GLOBAL_MESSAGE_BOX.close();
 
-                    // 如果 DownloadUI 是你自定义的一个静态 JFrame 或 JDialog
+                    // 如果 DownloadUI 是我们自定义的一个静态 JFrame 或 JDialog
                     // 确保它里面有 dispose() 方法，或者它是当前 frame 的子窗口
                     try {
                         // 防止 DownloadUI 类不存在时报错（如果你还没写这个类）

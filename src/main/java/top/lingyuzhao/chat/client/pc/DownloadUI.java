@@ -10,7 +10,8 @@ public class DownloadUI {
 
     private static final Map<Integer, JProgressBar> bars = new HashMap<>();
     private static final Map<Integer, String> fileNameByBar = new HashMap<>();
-    private static final JPanel panel = new JPanel();    private static final JFrame frame = createFrame();
+    private static final JFrame frame = createFrame();
+    private static final JPanel panel = new JPanel();
     private static final Pattern PATTERN = Pattern.compile("[/\\\\]+");
 
     static {
@@ -133,6 +134,8 @@ public class DownloadUI {
         panel.removeAll();
         frame.dispose();
     }
+
+
 
 
 }

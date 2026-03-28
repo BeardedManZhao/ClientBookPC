@@ -17,6 +17,7 @@ public class DownloadManager extends CefDownloadHandlerAdapter {
     // ✅ 新增：记录每个 ID 当前最新的 path（用于反查）
     private final Map<Integer, String> idToPath = new ConcurrentHashMap<>();
     private final AtomicInteger idGen = new AtomicInteger(0);
+
     public DownloadManager() {
         // 不需要加载配置了，CEF 会自动记住上次下载路径
         System.out.println("[Download] 使用原生 Win11 下载对话框，自动记忆路径。");

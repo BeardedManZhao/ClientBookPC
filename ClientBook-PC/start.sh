@@ -1,1 +1,1 @@
-./jre-linux/bin/javaw -jar ./ClientBookPC-1.1.jar
+./jre-linux/bin/javaw -jar ./ClientBookPC-1.2.jar

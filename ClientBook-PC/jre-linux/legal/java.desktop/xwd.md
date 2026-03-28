@@ -1,6 +1,7 @@
 ## xwd v1.0.7
 
 ### xwd utility
+
 <pre>
 
 This is the copyright for the files in src/java.desktop/unix/native/libawt_xawt:

@@ -1,1 +1,1 @@
-start .\jre-win\bin\javaw -jar ClientBookPC-1.1.jar
+start .\jre-win\bin\javaw -jar ClientBookPC-1.2.jar
